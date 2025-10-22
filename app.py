@@ -11,7 +11,6 @@ import os
 app = Flask(__name__)
 app.secret_key = 'chave_secreta_para_o_projeto'
 
-
 def init_db():
     conn = sqlite3.connect('bullying.db')
     cursor = conn.cursor()
@@ -81,7 +80,7 @@ def denuncia():
         nome = request.form.get('nome') if not is_anon else None
         email = request.form.get('email') if not is_anon else None
         tipo_bullying = request.form['tipo_bullying']
-        local = request.form.get('local', '') if 'local' in request.form else ''
+        local = request.form.get('local', '')
         descricao = request.form['descricao']
         data_denuncia = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -99,7 +98,6 @@ def denuncia():
 
     return render_template('denuncia.html')
 
-
 @app.route('/estatisticas')
 def estatisticas():
     conn = sqlite3.connect('bullying.db')
@@ -113,9 +111,9 @@ def estatisticas():
 
     conn.close()
 
-    tipos = [dado[0] for dado in dados_2023]
-    valores_2023 = [dado[1] for dado in dados_2023]
-    valores_2024 = [dado[1] for dado in dados_2024]
+    tipos = list(set([dado[0] for dado in dados_2023 + dados_2024]))
+    valores_2023 = [next((d[1] for d in dados_2023 if d[0] == tipo), 0) for tipo in tipos]
+    valores_2024 = [next((d[1] for d in dados_2024 if d[0] == tipo), 0) for tipo in tipos]
 
     plt.figure(figsize=(10, 6))
     x = range(len(tipos))
@@ -132,38 +130,35 @@ def estatisticas():
     plt.tight_layout()
 
     img = io.BytesIO()
-    plt.savefig(img, format='png')
+    plt.savefig(img, format='png', dpi=100, bbox_inches='tight')
     img.seek(0)
     graph_url = base64.b64encode(img.getvalue()).decode()
     plt.close()
 
     return render_template('estatisticas.html', graph_url=graph_url)
 
-
-@app.route('/contato')
+@app.route('/contato', methods=['GET', 'POST'])
 def contato():
+    if request.method == 'POST':
+        nome = request.form.get('nome')
+        email = request.form.get('email')
+        assunto = request.form.get('assunto')
+        mensagem = request.form.get('mensagem')
+        data_envio = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        conn = sqlite3.connect('bullying.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO contatos (nome, email, assunto, mensagem, data_envio)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (nome, email, assunto, mensagem, data_envio))
+        conn.commit()
+        conn.close()
+
+        flash('Mensagem enviada com sucesso! Obrigado pelo contato.', 'success')
+        return redirect(url_for('contato'))
+    
     return render_template('contato.html')
-
-
-@app.route('/contato', methods=['POST'])
-def contato_post():
-    nome = request.form.get('nome')
-    email = request.form.get('email')
-    assunto = request.form.get('assunto')
-    mensagem = request.form.get('mensagem')
-    data_envio = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-    conn = sqlite3.connect('bullying.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO contatos (nome, email, assunto, mensagem, data_envio)
-        VALUES (?, ?, ?, ?, ?)
-    ''', (nome, email, assunto, mensagem, data_envio))
-    conn.commit()
-    conn.close()
-
-    flash('Mensagem enviada com sucesso! Obrigado pelo contato.', 'success')
-    return redirect(url_for('contato'))
 
 @app.route('/admin-login', methods=['POST'])
 def admin_login():
@@ -179,15 +174,15 @@ def admin_login():
         return jsonify({'ok': True}), 200
     return jsonify({'ok': False, 'error': 'Senha inválida'}), 401
 
-
 @app.route('/admin')
 def admin_dashboard():
     if not session.get('is_admin'):
         flash('Acesso restrito. Autentique-se como administrador.', 'error')
         return redirect(url_for('index'))
+    
     conn = sqlite3.connect('bullying.db')
     cursor = conn.cursor()
-    # 
+    
     cursor.execute('''
         SELECT id, nome, email, assunto, mensagem, data_envio
         FROM contatos
@@ -226,6 +221,7 @@ def admin_dashboard():
 
     conn.close()
 
+    # Gráfico de tipos de bullying
     chart_tipo_b64 = None
     if denuncias_por_tipo:
         tipos = [row[0] for row in denuncias_por_tipo]
@@ -239,18 +235,19 @@ def admin_dashboard():
             plt.text(bar.get_x() + bar.get_width()/2, bar.get_height(), str(v), ha='center', va='bottom', fontsize=9)
         plt.tight_layout()
         buf = io.BytesIO()
-        plt.savefig(buf, format='png')
+        plt.savefig(buf, format='png', dpi=100, bbox_inches='tight')
         buf.seek(0)
         chart_tipo_b64 = base64.b64encode(buf.getvalue()).decode()
         plt.close()
 
+    # Gráfico de anonimato
     chart_anonimato_b64 = None
     if denuncias_anonimato:
         labels = [row[0] for row in denuncias_anonimato]
         sizes = [row[1] for row in denuncias_anonimato]
         colors = ['#e53935', '#4caf50']
         plt.figure(figsize=(8, 6))
-        wedges, texts, autotexts = plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90, textprops={'fontsize': 12, 'weight': 'bold'})
+        wedges, texts, autotexts = plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
         for autotext in autotexts:
             autotext.set_color('white')
             autotext.set_fontsize(11)
@@ -263,15 +260,17 @@ def admin_dashboard():
         chart_anonimato_b64 = base64.b64encode(buf2.getvalue()).decode()
         plt.close()
 
-    return render_template('admin.html', contatos=contatos, denuncias=denuncias, chart_tipo_b64=chart_tipo_b64, chart_anonimato_b64=chart_anonimato_b64)
-
+    return render_template('admin.html', 
+                         contatos=contatos, 
+                         denuncias=denuncias, 
+                         chart_tipo_b64=chart_tipo_b64, 
+                         chart_anonimato_b64=chart_anonimato_b64)
 
 @app.route('/admin-logout')
 def admin_logout():
     session.pop('is_admin', None)
     flash('Sessão de administrador encerrada.', 'success')
     return redirect(url_for('index'))
-
 
 if __name__ == '__main__':
     init_db()
