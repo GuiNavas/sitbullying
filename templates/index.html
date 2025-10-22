@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Início - Contra o Bullying{% endblock %}
+
+{% block content %}
+<section class="hero-section fade-in">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Juntos Contra o Bullying</h1>
+                <p class="lead mb-4">Informação, conscientização e apoio para combater o bullying e cyberbullying em nossas escolas e comunidades. Vamos construir um ambiente mais seguro e respeitoso para todos.</p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center">
+                    <a href="{{ url_for('denuncia') }}" class="btn btn-primary btn-lg hero-btn">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Denuncie Agora
+                    </a>
+                    <a href="{{ url_for('sobre') }}" class="btn btn-primary btn-lg hero-btn">
+                        <i class="fas fa-info-circle me-2"></i>Saiba Mais
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-box">
+    <div class="text-center mb-5">
+        <h2 class="mb-3">O que é Bullying?</h2>
+        <p class="lead">O bullying é um comportamento agressivo e intencional que ocorre repetidamente, causando danos físicos ou emocionais à vítima.</p>
+    </div>
+    
+    <div class="cards-row">
+        <div class="card">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+            <h4 class="card-title">Bullying Físico</h4>
+            <p class="card-text">Agressões físicas, empurrões, chutes, socos ou qualquer forma de violência corporal direta.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-comment-dots fa-3x mb-3"></i>
+            <h4 class="card-title">Bullying Verbal</h4>
+            <p class="card-text">Ofensas, apelidos pejorativos, xingamentos, humilhações e comentários depreciativos.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-users fa-3x mb-3"></i>
+            <h4 class="card-title">Bullying Social</h4>
+            <p class="card-text">Exclusão intencional, espalhar boatos, isolamento social e rejeição do grupo.</p>
+        </div>
+    </div>
+</section>
+
+<section class="page-box">
+    <div class="text-center mb-5">
+        <h2 class="mb-3">Como se Proteger e Ajudar</h2>
+        <p class="lead">Existem várias formas de combater o bullying. Conheça as principais estratégias de proteção e apoio.</p>
+    </div>
+    
+    <div class="cards-row">
+        <div class="card">
+            <i class="fas fa-shield-alt fa-3x mb-3"></i>
+            <h4 class="card-title">Busque Ajuda</h4>
+            <p class="card-text">Converse com familiares, professores, coordenadores ou profissionais especializados. Não sofra sozinho.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-bullhorn fa-3x mb-3"></i>
+            <h4 class="card-title">Denuncie</h4>
+            <p class="card-text">Não tenha medo de denunciar casos de bullying. Sua voz pode fazer a diferença e proteger outras pessoas.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-hands-helping fa-3x mb-3"></i>
+            <h4 class="card-title">Apoie Vítimas</h4>
+            <p class="card-text">Seja solidário e ofereça apoio emocional para quem está sofrendo bullying. A solidariedade é fundamental.</p>
+        </div>
+    </div>
+</section>
+
+<section class="page-box">
+    <div class="text-center mb-5">
+        <h2 class="mb-3">Impactos na Sociedade</h2>
+        <p class="lead">Entenda como o bullying afeta a vida das pessoas e o desenvolvimento das comunidades.</p>
+    </div>
+    
+    <div class="cards-row">
+        <div class="card">
+            <i class="fas fa-brain fa-3x mb-3"></i>
+            <h4 class="card-title">Saúde Mental</h4>
+            <p class="card-text">Aumenta ansiedade, depressão e risco de isolamento social nas vítimas.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-school fa-3x mb-3"></i>
+            <h4 class="card-title">Desempenho Escolar</h4>
+            <p class="card-text">Quedas nas notas, evasão e dificuldades de aprendizagem no ambiente escolar.</p>
+        </div>
+        <div class="card">
+            <i class="fas fa-people-arrows fa-3x mb-3"></i>
+            <h4 class="card-title">Relações Sociais</h4>
+            <p class="card-text">Prejudica vínculos, confiança e a convivência respeitosa em comunidade.</p>
+        </div>
+    </div>
+    <div class="text-center">
+        <a href="{{ url_for('sobre') }}" class="btn btn-outline-primary">
+            <i class="fas fa-book me-2"></i>Saiba Mais
+        </a>
+        <a href="{{ url_for('estatisticas') }}" class="btn btn-primary ms-2">
+            <i class="fas fa-chart-line me-2"></i>Ver Gráficos
+        </a>
+    </div>
+</section>
+
+<section class="page-box text-center call-to-action">
+    <h2 class="mb-4">Não Fique em Silêncio</h2>
+    <p class="lead mb-4">Se você está sofrendo ou conhece alguém que está passando por bullying, denuncie. Sua voz pode fazer a diferença e salvar vidas.</p>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Plataforma de conscientização sobre bullying e cyberbullying.">
+  <title>{% block title %}Contra o Bullying - Conscientização e Prevenção{% endblock %}</title>
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+</head>
+<body>
+  <header>
+    <nav class="navbar custom-navbar">
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" style="height:36px;"> Contra o Bullying
+        </a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-4">
+    {% set messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="mt-4 text-center">
+    <small>© 2025 Contra o Bullying</small>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Estatísticas - Contra o Bullying{% endblock %}
+
+{% block content %}
+<section class="page-box text-center">
+    <h1 class="mb-4">Estatísticas de Bullying e Cyberbullying</h1>
+    <p class="lead">Dados e análises sobre a prevalência do bullying em diferentes contextos</p>
+</section>
+
+<section class="page-box">
+    <div class="text-center mb-4">
+        <h2 class="mb-3">Comparativo Anual de Tipos de Bullying</h2>
+        <p class="text-muted">Dados simulados para fins educacionais - 2023 vs 2024</p>
+    </div>
+    
+    {% if graph_url %}
+        <div class="text-center">
+            <img src="data:image/png;base64,{{ graph_url }}" class="img-fluid rounded shadow-lg stats-graph-img" alt="Gráfico de Estatísticas de Bullying">
+            <p class="mt-2 text-muted small">Fonte (exemplo verificável): <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao/17270-pense.html" target="_blank" rel="noopener">IBGE — Pesquisa Nacional de Saúde do Escolar (PeNSE)</a></p>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Gráfico não disponível no momento. Tente recarregar a página.
+        </div>
+    {% endif %}
+</section>
+
+<section class="page-box">
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100 text-center">
+                    <div class="card-body">
+                    <i class="fas fa-database fa-3x mb-3 text-primary"></i>
+                    <h4 class="card-title">Fonte do Gráfico</h4>
+                    <p class="card-text">Exemplo de fonte verificável usada na apresentação: <a href="https://www.ibge.gov.br/estatisticas/sociais/educacao/17270-pense.html" target="_blank" rel="noopener">IBGE — PeNSE</a>. Os dados exibidos aqui são simulados, mas referenciados para fins acadêmicos.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-calendar-alt fa-3x mb-3 text-success"></i>
+                    <h4 class="card-title">Período</h4>
+                    <p class="card-text">Análise comparativa entre os anos de 2023 e 2024, mostrando tendências e mudanças nos padrões.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-users fa-3x mb-3 text-info"></i>
+                    <h4 class="card-title">Amostra</h4>
+                    <p class="card-text">Dados representativos de diferentes tipos de bullying: físico, verbal, social e cyberbullying.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="page-box">
+    <h3 class="mb-4 text-center" style="color: #e53935; font-weight: 700;">Resumo dos Dados</h3>
+    <div class="d-flex justify-content-center">
+        <div class="table-responsive stats-table-container">
+            <table class="table table-striped table-hover stats-table">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center">Tipo de Bullying</th>
+                        <th class="text-center">2023 (%)</th>
+                        <th class="text-center">2024 (%)</th>
+                        <th class="text-center">Variação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="text-center"><i class="fas fa-laptop me-2 text-primary"></i>Cyberbullying</td>
+                        <td class="text-center">45%</td>
+                        <td class="text-center">50%</td>
+                        <td class="text-center text-danger">+5%</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Bullying Físico</td>
+                        <td class="text-center">30%</td>
+                        <td class="text-center">25%</td>
+                        <td class="text-center text-success">-5%</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><i class="fas fa-comment-dots me-2 text-info"></i>Bullying Verbal</td>
+                        <td class="text-center">60%</td>
+                        <td class="text-center">55%</td>
+                        <td class="text-center text-success">-5%</td>
+                    </tr>
+                    <tr>
+                        <td class="text-center"><i class="fas fa-users me-2 text-secondary"></i>Bullying Social</td>
+                        <td class="text-center">25%</td>
+                        <td class="text-center">30%</td>
+                        <td class="text-center text-danger">+5%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<section class="page-box">
+    <div class="alert alert-info">
+        <h4 class="alert-heading">
+            <i class="fas fa-info-circle me-2"></i>Observações Importantes
+        </h4>
+        <ul class="mb-0">
+            <li><strong>Dados Simulados:</strong> Estas estatísticas são para fins educacionais e de demonstração.</li>
+            <li><strong>Fonte:</strong> Projeto acadêmico de conscientização sobre bullying.</li>
+            <li><strong>Metodologia:</strong> Dados baseados em pesquisas simuladas em ambiente educacional.</li>
+            <li><strong>Objetivo:</strong> Ilustrar a importância da conscientização e prevenção do bullying.</li>
+        </ul>
+    </div>
+</section>
+{% endblock %}
