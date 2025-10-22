@@ -2,6 +2,5 @@ services:
   - type: web
     name: bullying-app
     env: python
-    region: oregon
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: python app.py
