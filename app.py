@@ -1,11 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import sqlite3
 from datetime import datetime
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-import io
-import base64
 import os
 
 app = Flask(__name__)
@@ -111,31 +106,11 @@ def estatisticas():
 
     conn.close()
 
-    tipos = list(set([dado[0] for dado in dados_2023 + dados_2024]))
-    valores_2023 = [next((d[1] for d in dados_2023 if d[0] == tipo), 0) for tipo in tipos]
-    valores_2024 = [next((d[1] for d in dados_2024 if d[0] == tipo), 0) for tipo in tipos]
-
-    plt.figure(figsize=(10, 6))
-    x = range(len(tipos))
-    width = 0.35
-
-    plt.bar([i - width/2 for i in x], valores_2023, width, label='2023', color='#ff6b6b')
-    plt.bar([i + width/2 for i in x], valores_2024, width, label='2024', color='#4ecdc4')
-
-    plt.xlabel('Tipos de Bullying')
-    plt.ylabel('Percentual (%)')
-    plt.title('Estatísticas de Bullying (Dados Simulados)')
-    plt.xticks(x, tipos, rotation=45)
-    plt.legend()
-    plt.tight_layout()
-
-    img = io.BytesIO()
-    plt.savefig(img, format='png', dpi=100, bbox_inches='tight')
-    img.seek(0)
-    graph_url = base64.b64encode(img.getvalue()).decode()
-    plt.close()
-
-    return render_template('estatisticas.html', graph_url=graph_url)
+    # Retorna dados sem gráfico
+    return render_template('estatisticas.html', 
+                         dados_2023=dados_2023, 
+                         dados_2024=dados_2024,
+                         graph_url=None)
 
 @app.route('/contato', methods=['GET', 'POST'])
 def contato():
@@ -162,13 +137,7 @@ def contato():
 
 @app.route('/admin-login', methods=['POST'])
 def admin_login():
-    password = ''
-    data = request.get_json(silent=True)
-    if isinstance(data, dict) and 'password' in data:
-        password = data.get('password') or ''
-    else:
-        password = request.form.get('password', '')
-    password = password.strip()
+    password = request.form.get('password', '').strip()
     if password == 'DanielGuilherme':
         session['is_admin'] = True
         return jsonify({'ok': True}), 200
@@ -183,20 +152,10 @@ def admin_dashboard():
     conn = sqlite3.connect('bullying.db')
     cursor = conn.cursor()
     
-    cursor.execute('''
-        SELECT id, nome, email, assunto, mensagem, data_envio
-        FROM contatos
-        ORDER BY id DESC
-        LIMIT 200
-    ''')
+    cursor.execute('SELECT * FROM contatos ORDER BY id DESC LIMIT 200')
     contatos = cursor.fetchall()
 
-    cursor.execute('''
-        SELECT id, nome, email, tipo_bullying, local, descricao, data_denuncia, status
-        FROM denuncias
-        ORDER BY id DESC
-        LIMIT 200
-    ''')
+    cursor.execute('SELECT * FROM denuncias ORDER BY id DESC LIMIT 200')
     denuncias = cursor.fetchall()
 
     cursor.execute('''
@@ -221,50 +180,13 @@ def admin_dashboard():
 
     conn.close()
 
-    # Gráfico de tipos de bullying
-    chart_tipo_b64 = None
-    if denuncias_por_tipo:
-        tipos = [row[0] for row in denuncias_por_tipo]
-        counts = [row[1] for row in denuncias_por_tipo]
-        plt.figure(figsize=(8, 4))
-        bars = plt.bar(tipos, counts, color=['#e53935', '#ff7043', '#42a5f5', '#66bb6a', '#ab47bc', '#ffa726'])
-        plt.title('Denúncias por Tipo')
-        plt.ylabel('Quantidade')
-        plt.xticks(rotation=25, ha='right')
-        for bar, v in zip(bars, counts):
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height(), str(v), ha='center', va='bottom', fontsize=9)
-        plt.tight_layout()
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png', dpi=100, bbox_inches='tight')
-        buf.seek(0)
-        chart_tipo_b64 = base64.b64encode(buf.getvalue()).decode()
-        plt.close()
-
-    # Gráfico de anonimato
-    chart_anonimato_b64 = None
-    if denuncias_anonimato:
-        labels = [row[0] for row in denuncias_anonimato]
-        sizes = [row[1] for row in denuncias_anonimato]
-        colors = ['#e53935', '#4caf50']
-        plt.figure(figsize=(8, 6))
-        wedges, texts, autotexts = plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-        for autotext in autotexts:
-            autotext.set_color('white')
-            autotext.set_fontsize(11)
-            autotext.set_weight('bold')
-        plt.axis('equal')
-        plt.tight_layout()
-        buf2 = io.BytesIO()
-        plt.savefig(buf2, format='png', dpi=100, bbox_inches='tight')
-        buf2.seek(0)
-        chart_anonimato_b64 = base64.b64encode(buf2.getvalue()).decode()
-        plt.close()
-
     return render_template('admin.html', 
                          contatos=contatos, 
                          denuncias=denuncias, 
-                         chart_tipo_b64=chart_tipo_b64, 
-                         chart_anonimato_b64=chart_anonimato_b64)
+                         denuncias_por_tipo=denuncias_por_tipo,
+                         denuncias_anonimato=denuncias_anonimato,
+                         chart_tipo_b64=None, 
+                         chart_anonimato_b64=None)
 
 @app.route('/admin-logout')
 def admin_logout():
@@ -275,5 +197,4 @@ def admin_logout():
 if __name__ == '__main__':
     init_db()
     port = int(os.environ.get('PORT', 5000))
-    debug_mode = os.environ.get('FLASK_ENV') != 'production'
-    app.run(debug=debug_mode, host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port)
